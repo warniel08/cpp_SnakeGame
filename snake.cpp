@@ -186,23 +186,42 @@ void draw() {
 	Sleep(100);
 	if (!gameOver && paused)
 		update();
-	else if (gameOver && !paused)
-	{
-		paused;
-		cout << "Score is: " << score << endl;
-		cout << "Apple count is: " << aCount << endl;
-		cout << "Golden count is: " << gCount << endl;
-		cout << "Cherry count is: " << cCount << endl;
-	}
 }
 
 void saveGame() {
 	string savedGame;
-
+	
+	for (int i = 0; i < savedNames.size(); i++) cout << savedNames[i] << endl;
 	cout << "Save Game (enter a name): ";
 	cin >> savedGame;
 	savedGame = savedGame + ".txt";
 	savedNames.push_back(savedGame);
+
+	ofstream fileOutput("savedGames.txt", ofstream::app);
+
+	int index = 0;
+	int position = -1;
+	bool found = false;
+
+	while (index < savedNames.size() && !found) {
+		if (savedNames[index] == savedGame) {
+			found = true;
+			position = index;
+		}
+		index++;
+	}
+
+	for (int i = 0; i < savedNames.size(); i++) {
+		if (position == -1) {
+			cout << "File name " << savedGame << " already exists. Enter a different name.\n";
+		}
+		else {
+			fileOutput << savedNames[position] << endl;
+			break;
+		}
+	}
+
+	fileOutput.close();
 
 	ofstream fout(savedGame);
 
@@ -239,6 +258,7 @@ void saveGame() {
 
 void loadGame() {
 	string savedGame;
+	string gameName;
 	int snakeSize;
 
 	score = 0;
@@ -246,12 +266,39 @@ void loadGame() {
 	gCount = 0;
 	cCount = 0;
 
+	ifstream fileNames("savedGames.txt");;
+
+	savedNames.clear();
+
+	while (!fileNames.eof()) {
+		fileNames >> gameName;
+		if (fileNames.eof()) break;
+		savedNames.push_back(gameName);
+	}
+	fileNames.close();
+
 	cout << "Load Game (enter a name): ";
 	cin >> savedGame;
 	savedGame = savedGame + ".txt";
 
-	for (int i = 0; i < savedNames.size(); i++)
-		if (savedGame == savedNames[i]) {
+	int index = 0;
+	int position = -1;
+	bool found = false;
+
+	while (index < savedNames.size() && !found) {
+		if (savedNames[index] == savedGame) {
+			found = true;
+			position = index;
+		}
+		index++;
+	}
+
+	for (int i = 0; i < savedNames.size(); i++) {
+		if (position == -1) {
+			cout << "Name does not exist. Enter a different name." << endl;
+			break;
+		}
+		else {
 			ifstream fin(savedGame);
 
 			snakeX.clear();
@@ -286,8 +333,9 @@ void loadGame() {
 			fin >> cCount;
 
 			fin.close();
-		} else
-			cout << "Name does not exist" << endl;
+			break;
+		}
+	}
 }
 
 void keyboard(int key) {
@@ -298,8 +346,18 @@ void keyboard(int key) {
 	case 'd': if (direction == 'N' || direction == 'S') direction = 'E'; break;
 	case 'n': saveGame(); break;
 	case 'm': loadGame(); break;
+	case ';':
+		cout << "Score is: " << score << endl;
+		cout << "Apple count is: " << aCount << endl;
+		cout << "Golden count is: " << gCount << endl;
+		cout << "Cherry count is: " << cCount << endl;
+		break;
 	case 'p':
 		paused = !paused;
+		break;
+	case '.': 
+		for (int i = 0; i < savedNames.size(); i++) 
+			cout << savedNames[i] << endl; 
 		break;
 	case ' ':
 		if (gameOver) {
