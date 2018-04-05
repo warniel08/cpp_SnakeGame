@@ -190,7 +190,7 @@ void draw() {
 
 void saveGame() {
 	string savedGame;
-	
+
 	for (int i = 0; i < savedNames.size(); i++) cout << savedNames[i] << endl;
 	cout << "Save Game (enter a name): ";
 	cin >> savedGame;
@@ -333,7 +333,6 @@ void loadGame() {
 			fin >> cCount;
 
 			fin.close();
-			break;
 		}
 	}
 }
@@ -355,9 +354,9 @@ void keyboard(int key) {
 	case 'p':
 		paused = !paused;
 		break;
-	case '.': 
-		for (int i = 0; i < savedNames.size(); i++) 
-			cout << savedNames[i] << endl; 
+	case '.':
+		for (int i = 0; i < savedNames.size(); i++)
+			cout << savedNames[i] << endl;
 		break;
 	case ' ':
 		if (gameOver) {
