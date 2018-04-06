@@ -190,35 +190,84 @@ void draw() {
 
 void saveGame() {
 	string savedGame;
+	string gameName;
+	bool first = false;
+	savedNames.clear();
+	ofstream fileOutput("savedGames.txt", ofstream::app);
 
-	for (int i = 0; i < savedNames.size(); i++) cout << savedNames[i] << endl;
+	ifstream fileNames("savedGames.txt");
+
+	// i want the file to load names into the vector if they exist
+	// my problem is if there aren't any names I want it to skip this and write the new name
+	streampos current = fileNames.tellg();
+	fileNames.seekg(0, fileNames.end);
+	bool empty = !fileNames.tellg(); // true if empty file
+	fileNames.seekg(current, fileNames.beg);
+
+	while (fileNames >> gameName) {
+		//if (fileNames.eof()) break;
+		//fileNames >> gameName;
+		savedNames.push_back(gameName);
+	}
+
+	// need something here to catch if the vector is empty
 	cout << "Save Game (enter a name): ";
 	cin >> savedGame;
 	savedGame = savedGame + ".txt";
-	savedNames.push_back(savedGame);
+	if (empty) {
+		first = true;
+		savedNames.push_back(savedGame);
+	}
 
-	ofstream fileOutput("savedGames.txt", ofstream::app);
+	fileNames.close();
 
 	int index = 0;
 	int position = -1;
 	bool found = false;
 
+	for (int i = 0; i < savedNames.size(); i++) {
+		cout << "Saved Names vector: " << i+1 << ". " << savedNames[i] << endl;
+	}
+
 	while (index < savedNames.size() && !found) {
-		if (savedNames[index] == savedGame) {
-			found = true;
-			position = index;
+		if (savedNames[0] == savedGame) {
+			if (empty) {
+				position = 0;
+			}
+			else {
+				position = -1;
+			}
 		}
+		else if (savedNames[index] == savedGame) {
+			found = true;
+			position = -1;
+			break;
+		}
+		else
+			position = index;
 		index++;
 	}
 
 	for (int i = 0; i < savedNames.size(); i++) {
 		if (position == -1) {
 			cout << "File name " << savedGame << " already exists. Enter a different name.\n";
+			break;
 		}
-		else {
+		else if (first) {
 			fileOutput << savedNames[position] << endl;
 			break;
 		}
+		else
+		{
+			savedNames.push_back(savedGame);
+			fileOutput << savedGame << endl;
+			break;
+		}
+	}
+
+	cout << endl << endl;
+	for (int i = 0; i < savedNames.size(); i++) {
+		cout << "Saved Names vector: " << i + 1 << ". " << savedNames[i] << endl;
 	}
 
 	fileOutput.close();
@@ -266,7 +315,7 @@ void loadGame() {
 	gCount = 0;
 	cCount = 0;
 
-	ifstream fileNames("savedGames.txt");;
+	ifstream fileNames("savedGames.txt");
 
 	savedNames.clear();
 
