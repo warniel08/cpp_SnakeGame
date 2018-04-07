@@ -269,40 +269,42 @@ void saveGame() {
 	for (int i = 0; i < savedNames.size(); i++) {
 		cout << "Saved Names vector: " << i + 1 << ". " << savedNames[i] << endl;
 	}
-
+	
 	fileOutput.close();
+	
+	if (!found) {
+		ofstream fout(savedGame);
 
-	ofstream fout(savedGame);
-
-	for (int i = 0; i < gridWidth; i++) {
-		for (int j = 0; j < gridHeight; j++) {
-			fout << board[i][j];
+		for (int i = 0; i < gridWidth; i++) {
+			for (int j = 0; j < gridHeight; j++) {
+				fout << board[i][j];
+			}
 		}
+
+		fout << endl;
+		fout << snakeX.size() << endl;
+
+		fout << direction << endl;
+		fout << headX << endl;
+		fout << headY << endl;
+
+		for (int i : snakeX) {
+			fout << i << " ";
+		}
+		fout << endl;
+
+		for (int i : snakeY) {
+			fout << i << " ";
+		}
+		fout << endl;
+
+		fout << score << endl;
+		fout << aCount << endl;
+		fout << gCount << endl;
+		fout << cCount << endl;
+
+		fout.close();
 	}
-
-	fout << endl;
-	fout << snakeX.size() << endl;
-
-	fout << direction << endl;
-	fout << headX << endl;
-	fout << headY << endl;
-
-	for (int i : snakeX) {
-		fout << i << " ";
-	}
-	fout << endl;
-
-	for (int i : snakeY) {
-		fout << i << " ";
-	}
-	fout << endl;
-
-	fout << score << endl;
-	fout << aCount << endl;
-	fout << gCount << endl;
-	fout << cCount << endl;
-
-	fout.close();
 }
 
 void loadGame() {
