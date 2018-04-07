@@ -38,7 +38,6 @@ int aCount = 0;
 int gCount = 0;
 int cCount = 0;
 vector<string> savedNames;
-vector<string> loadNames;
 
 void DrawElement(double i, double j, char element) {
     double x = (i + .5) / gridWidth * 2.0 - 1.0;
@@ -189,139 +188,197 @@ void draw() {
     usleep(100000);
     if (!gameOver && paused)
         update();
-    else if (gameOver && !paused)
-    {
-        paused;
-        cout << "Score is: " << score << endl;
-        cout << "Apple count is: " << aCount << endl;
-        cout << "Golden count is: " << gCount << endl;
-        cout << "Cherry count is: " << cCount << endl;
-    }
 }
 
 void saveGame() {
     string savedGame;
+    string gameName;
+    bool first = false;
+    savedNames.clear();
+    ofstream fileOutput("savedGames.txt", ofstream::app);
     
+    ifstream fileNames("savedGames.txt");
+    
+    // i want the file to load names into the vector if they exist
+    // my problem is if there aren't any names I want it to skip this and write the new name
+    streampos current = fileNames.tellg();
+    fileNames.seekg(0, fileNames.end);
+    bool empty = !fileNames.tellg(); // true if empty file
+    fileNames.seekg(current, fileNames.beg);
+    
+    while (fileNames >> gameName) {
+        //if (fileNames.eof()) break;
+        //fileNames >> gameName;
+        savedNames.push_back(gameName);
+    }
+    
+    // need something here to catch if the vector is empty
     cout << "Save Game (enter a name): ";
     cin >> savedGame;
     savedGame = savedGame + ".txt";
-    savedNames.push_back(savedGame);
+    if (empty) {
+        first = true;
+        savedNames.push_back(savedGame);
+    }
     
-    ofstream vout("savedNames.txt");
-    vout << savedGame << endl;
-    vout.close();
+    fileNames.close();
     
+    int index = 0;
+    int position = -1;
+    bool found = false;
     
-    ofstream fout(savedGame);
+    while (index < savedNames.size() && !found) {
+        if (savedNames[0] == savedGame) {
+            if (empty) {
+                position = 0;
+            }
+            else {
+                position = -1;
+            }
+        }
+        else if (savedNames[index] == savedGame) {
+            found = true;
+            position = -1;
+            break;
+        }
+        else
+            position = index;
+        index++;
+    }
     
-    for (int i = 0; i < gridWidth; i++) {
-        for (int j = 0; j < gridHeight; j++) {
-            fout << board[i][j];
+    for (int i = 0; i < savedNames.size(); i++) {
+        if (position == -1) {
+            cout << "File name " << savedGame << " already exists. Enter a different name.\n";
+            break;
+        }
+        else if (first) {
+            fileOutput << savedNames[position] << endl;
+            break;
+        }
+        else
+        {
+            savedNames.push_back(savedGame);
+            fileOutput << savedGame << endl;
+            break;
         }
     }
     
-    fout << endl;
-    fout << snakeX.size() << endl;
+    fileOutput.close();
     
-    fout << direction << endl;
-    fout << headX << endl;
-    fout << headY << endl;
-    
-    for (int i : snakeX) {
-        fout << i << " ";
+    if (!found) {
+        ofstream fout(savedGame);
+        
+        for (int i = 0; i < gridWidth; i++) {
+            for (int j = 0; j < gridHeight; j++) {
+                fout << board[i][j];
+            }
+        }
+        
+        fout << endl;
+        fout << snakeX.size() << endl;
+        
+        fout << direction << endl;
+        fout << headX << endl;
+        fout << headY << endl;
+        
+        for (int i : snakeX) {
+            fout << i << " ";
+        }
+        fout << endl;
+        
+        for (int i : snakeY) {
+            fout << i << " ";
+        }
+        fout << endl;
+        
+        fout << score << endl;
+        fout << aCount << endl;
+        fout << gCount << endl;
+        fout << cCount << endl;
+        
+        fout.close();
     }
-    fout << endl;
-    
-    for (int i : snakeY) {
-        fout << i << " ";
-    }
-    fout << endl;
-    
-    fout << score << endl;
-    fout << aCount << endl;
-    fout << gCount << endl;
-    fout << cCount << endl;
-    
-    fout.close();
 }
 
 void loadGame() {
     string savedGame;
+    string gameName;
     int snakeSize;
-    bool found = false;
-    int position = -1;
-    int i = 0;
+    
+    score = 0;
+    aCount = 0;
+    gCount = 0;
+    cCount = 0;
+    
+    ifstream fileNames("savedGames.txt");
+    
+    savedNames.clear();
+    
+    while (!fileNames.eof()) {
+        fileNames >> gameName;
+        if (fileNames.eof()) break;
+        savedNames.push_back(gameName);
+    }
+    fileNames.close();
     
     cout << "Load Game (enter a name): ";
     cin >> savedGame;
     savedGame = savedGame + ".txt";
     
-    while (i < savedNames.size() && !found)
-    {
-        if (savedGame == savedNames[i])
-        {
+    int index = 0;
+    int position = -1;
+    bool found = false;
+    
+    while (index < savedNames.size() && !found) {
+        if (savedNames[index] == savedGame) {
             found = true;
-            position = i;
+            position = index;
         }
-        i++;
+        index++;
     }
     
-    if (position == -1)
-        cout << "Name does not exist" << endl;
-    else {
-        ifstream fin(savedNames[position]);
-        
-        score = 0;
-        aCount = 0;
-        gCount = 0;
-        cCount = 0;
-        
-        snakeX.clear();
-        snakeY.clear();
-        
-        for (int i = 0; i < gridWidth; i++) {
-            for (int j = 0; j < gridHeight; j++)
-                fin >> board[i][j];
+    for (int i = 0; i < savedNames.size(); i++) {
+        if (position == -1) {
+            cout << "Name does not exist. Enter a different name." << endl;
+            break;
         }
-        
-        fin >> snakeSize;
-        fin >> direction;
-        fin >> headX;
-        fin >> headY;
-        
-        for (int i = 0; i < snakeSize; i++)
-        {
-            int x;
-            fin >> x;
-            snakeX.push_back(x);
+        else {
+            ifstream fin(savedGame);
+            
+            snakeX.clear();
+            snakeY.clear();
+            
+            for (int i = 0; i < gridWidth; i++) {
+                for (int j = 0; j < gridHeight; j++) {
+                    fin >> board[i][j];
+                }
+            }
+            
+            fin >> snakeSize;
+            fin >> direction;
+            fin >> headX;
+            fin >> headY;
+            
+            for (int i = 0; i < snakeSize; i++) {
+                int x;
+                fin >> x;
+                snakeX.push_back(x);
+            }
+            
+            for (int i = 0; i < snakeSize; i++) {
+                int y;
+                fin >> y;
+                snakeY.push_back(y);
+            }
+            
+            fin >> score;
+            fin >> aCount;
+            fin >> gCount;
+            fin >> cCount;
+            
+            fin.close();
         }
-        
-        for (int i = 0; i < snakeSize; i++)
-        {
-            int y;
-            fin >> y;
-            snakeY.push_back(y);
-        }
-        
-        fin >> score;
-        fin >> aCount;
-        fin >> gCount;
-        fin >> cCount;
-        
-        fin.close();
     }
-    
-}
-
-void loadSavedNameVector() {
-    ifstream vin("savedNames.txt");
-    string name;
-    while (!vin.eof())
-    {
-        vin >> name;
-        savedNames.push_back(name);
-    }
-    vin.close();
 }
 
 void keyboard(int key) {
