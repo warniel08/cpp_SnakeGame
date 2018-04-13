@@ -225,10 +225,6 @@ void saveGame() {
 	int position = -1;
 	bool found = false;
 
-	for (int i = 0; i < savedNames.size(); i++) {
-		cout << "Saved Names vector: " << i+1 << ". " << savedNames[i] << endl;
-	}
-
 	while (index < savedNames.size() && !found) {
 		if (savedNames[0] == savedGame) {
 			if (empty) {
@@ -250,7 +246,7 @@ void saveGame() {
 
 	for (int i = 0; i < savedNames.size(); i++) {
 		if (position == -1) {
-			cout << "File name " << savedGame << " already exists. Enter a different name.\n";
+			cout << "File name " << savedGame << " already exists. Try saving with a different name.\n";
 			break;
 		}
 		else if (first) {
@@ -265,44 +261,41 @@ void saveGame() {
 		}
 	}
 
-	cout << endl << endl;
-	for (int i = 0; i < savedNames.size(); i++) {
-		cout << "Saved Names vector: " << i + 1 << ". " << savedNames[i] << endl;
-	}
-
 	fileOutput.close();
 
-	ofstream fout(savedGame);
+	if (!found) {
+		ofstream fout(savedGame);
 
-	for (int i = 0; i < gridWidth; i++) {
-		for (int j = 0; j < gridHeight; j++) {
-			fout << board[i][j];
+		for (int i = 0; i < gridWidth; i++) {
+			for (int j = 0; j < gridHeight; j++) {
+				fout << board[i][j];
+			}
 		}
+
+		fout << endl;
+		fout << snakeX.size() << endl;
+
+		fout << direction << endl;
+		fout << headX << endl;
+		fout << headY << endl;
+
+		for (int i : snakeX) {
+			fout << i << " ";
+		}
+		fout << endl;
+
+		for (int i : snakeY) {
+			fout << i << " ";
+		}
+		fout << endl;
+
+		fout << score << endl;
+		fout << aCount << endl;
+		fout << gCount << endl;
+		fout << cCount << endl;
+
+		fout.close();
 	}
-
-	fout << endl;
-	fout << snakeX.size() << endl;
-
-	fout << direction << endl;
-	fout << headX << endl;
-	fout << headY << endl;
-
-	for (int i : snakeX) {
-		fout << i << " ";
-	}
-	fout << endl;
-
-	for (int i : snakeY) {
-		fout << i << " ";
-	}
-	fout << endl;
-
-	fout << score << endl;
-	fout << aCount << endl;
-	fout << gCount << endl;
-	fout << cCount << endl;
-
-	fout.close();
 }
 
 void loadGame() {
@@ -344,7 +337,7 @@ void loadGame() {
 
 	for (int i = 0; i < savedNames.size(); i++) {
 		if (position == -1) {
-			cout << "Name does not exist. Enter a different name." << endl;
+			cout << "Name does not exist. Try loading with a different name." << endl;
 			break;
 		}
 		else {
