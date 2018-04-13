@@ -225,10 +225,6 @@ void saveGame() {
 	int position = -1;
 	bool found = false;
 
-	for (int i = 0; i < savedNames.size(); i++) {
-		cout << "Saved Names vector: " << i+1 << ". " << savedNames[i] << endl;
-	}
-
 	while (index < savedNames.size() && !found) {
 		if (savedNames[0] == savedGame) {
 			if (empty) {
@@ -250,7 +246,7 @@ void saveGame() {
 
 	for (int i = 0; i < savedNames.size(); i++) {
 		if (position == -1) {
-			cout << "File name " << savedGame << " already exists. Enter a different name.\n";
+			cout << "File name " << savedGame << " already exists. Try saving with a different name.\n";
 			break;
 		}
 		else if (first) {
@@ -265,13 +261,8 @@ void saveGame() {
 		}
 	}
 
-	cout << endl << endl;
-	for (int i = 0; i < savedNames.size(); i++) {
-		cout << "Saved Names vector: " << i + 1 << ". " << savedNames[i] << endl;
-	}
-	
 	fileOutput.close();
-	
+
 	if (!found) {
 		ofstream fout(savedGame);
 
@@ -346,7 +337,7 @@ void loadGame() {
 
 	for (int i = 0; i < savedNames.size(); i++) {
 		if (position == -1) {
-			cout << "Name does not exist. Enter a different name." << endl;
+			cout << "Name does not exist. Try loading with a different name." << endl;
 			break;
 		}
 		else {
