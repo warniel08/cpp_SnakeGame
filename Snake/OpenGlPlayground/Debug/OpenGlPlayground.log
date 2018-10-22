@@ -1,0 +1,7 @@
+﻿  Main.cpp
+c:\users\warner.nielsen\desktop\snake\openglplayground\main.cpp(228): warning C4018: '<': signed/unsigned mismatch
+c:\users\warner.nielsen\desktop\snake\openglplayground\main.cpp(247): warning C4018: '<': signed/unsigned mismatch
+c:\users\warner.nielsen\desktop\snake\openglplayground\main.cpp(330): warning C4018: '<': signed/unsigned mismatch
+c:\users\warner.nielsen\desktop\snake\openglplayground\main.cpp(338): warning C4018: '<': signed/unsigned mismatch
+c:\users\warner.nielsen\desktop\snake\openglplayground\main.cpp(400): warning C4018: '<': signed/unsigned mismatch
+  OpenGlPlayground.vcxproj -> C:\Users\warner.nielsen\Desktop\Snake\Debug\OpenGlPlayground.exe
